@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+/* ============ Añora tokens (from the official logo) ============ */
+@theme {
+  --color-crema: #f7efe1;
+  --color-marfil: #fff9ee;
+  --color-papel: #fbf5e9; /* album page */
+  --color-olivo: #343a21;
+  --color-pino: #233426;
+  --color-bugambilia: #9f2834;
+  --color-vino: #7d2426;
+  --color-terracota: #a85b35;
+  --color-madera: #744b2c;
+  --color-oro: #b47a2a;
+  --color-tinta: #2b2418;
+  --color-sepia: #6b5a45;
+  --color-mesa: #24170e; /* table */
+
+  --font-serif: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --font-sans: "Jost", "Futura", "Century Gothic", ui-sans-serif, system-ui, sans-serif;
+  --font-script: "Homemade Apple", "Segoe Script", "Bradley Hand", cursive;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  background: var(--color-mesa);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden; /* the album is the page: no document scroll */
+  background: var(--color-mesa);
+  color: var(--color-tinta);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: rgb(159 40 52 / 0.2);
+}
+
+@layer components {
+  /* Paper grain: tiny SVG noise multiplied over the page color */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .18 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Book cloth (cover): fine woven texture */
+  .cloth {
+    background-image:
+      radial-gradient(120% 90% at 30% 20%, rgb(255 255 255 / 0.07), transparent 60%),
+      repeating-linear-gradient(45deg, rgb(255 255 255 / 0.028) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(-45deg, rgb(0 0 0 / 0.06) 0 1px, transparent 1px 3px);
+  }
+
+  /* Endpaper: hand-printed pattern (diamonds + four-point stars), like old album guards */
+  .endpaper {
+    background-color: #5e1a1d;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='none' stroke='%23c9944a' stroke-opacity='.38'%3E%3Cpath d='M22 6 L30 22 L22 38 L14 22 Z'/%3E%3C/g%3E%3Cg fill='%23c9944a' fill-opacity='.42'%3E%3Cpath d='M0 0 l1.6 4.4 L6 6 l-4.4 1.6 L0 12 l-1.6-4.4 L-6 6 l4.4-1.6Z'/%3E%3Cpath d='M44 0 l1.6 4.4 L50 6 l-4.4 1.6 L44 12 l-1.6-4.4 L38 6 l4.4-1.6Z'/%3E%3Cpath d='M0 38 l1.6 4.4 L6 44 l-4.4 1.6 L0 50 l-1.6-4.4 L-6 44 l4.4-1.6Z'/%3E%3Cpath d='M44 38 l1.6 4.4 L50 44 l-4.4 1.6 L44 50 l-1.6-4.4 L38 44 l4.4-1.6Z'/%3E%3Ccircle cx='22' cy='22' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Gold foil text */
+  .foil {
+    background: linear-gradient(100deg, #8a5a1e 0%, #e7c27a 28%, #b47a2a 50%, #f0d394 72%, #8f601f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* ============ 3D helpers ============ */
+.preserve-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+
+/* ============ Slow ambient motion (transform / opacity only) ============ */
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.4deg); }
+  50%      { transform: rotate(2.4deg); }
+}
+@keyframes flicker {
+  0%, 100% { opacity: 0.92; }
+  30%      { opacity: 1; }
+  55%      { opacity: 0.82; }
+  75%      { opacity: 0.96; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 0.85; }
+}
+@keyframes dust {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  15%  { opacity: 0.7; }
+  85%  { opacity: 0.4; }
+  100% { transform: translate3d(var(--dx, 20px), -40vh, 0); opacity: 0; }
+}
+@keyframes ribbon {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50%      { transform: rotate(1.5deg); }
+}
+
+.anim-sway    { animation: sway 7s ease-in-out infinite; transform-origin: 50% 0; }
+.anim-flicker { animation: flicker 4s ease-in-out infinite; }
+.anim-twinkle { animation: twinkle 6s ease-in-out infinite; }
+.anim-dust    { animation: dust linear infinite; }
+.anim-ribbon  { animation: ribbon 6s ease-in-out infinite; transform-origin: 50% 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
